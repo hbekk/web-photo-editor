@@ -1,0 +1,47 @@
+.toolbar{
+    background-color: #3A3737;
+    border: 1px solid black;
+    border-radius: 60px;
+    height: 400px;
+    position: fixed;
+    width: 60px;
+    top: 25%;
+    z-index: 2;
+}
+
+.toolbar ul{
+    padding: 0;
+    font-size: 25px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    justify-content: center;
+}
+
+.toolbar a{
+    display: flex;
+    margin: 15px;
+    color: rgb(255, 255, 255);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.toolbar a:hover{
+   background-color: #242424;
+   border-radius: 3px;
+}
+
+.color-container{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+.color{
+    height: 20px;
+    width: 20px;
+    background-color: red;
+}
