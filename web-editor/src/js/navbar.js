@@ -1,14 +1,44 @@
-import React, { useRef } from "react";
+import React, { useRef, useState} from "react";
 import '../css/navbar.css'
+import App from '../App';
 
-export const Navbar = () => {
 
-    const fileInputRef = useRef(null); // Reference for the file input
 
+export const Navbar = ({ setImage, canvasRef, gaussianBlur, rotate}) => {
+    const fileInputRef = useRef(null);
     const upload = (event) => {
-        event.preventDefault(); // Prevent the default behavior of the link
-        fileInputRef.current.click(); // Trigger the file input click
+        event.preventDefault(); 
+        fileInputRef.current.click(); 
     };
+    
+    const handleFileChange = (event) => {
+      const file = event.target.files[0]; 
+      if (file) {
+        const imageUrl = URL.createObjectURL(file); 
+        setImage(imageUrl) 
+      }
+    };
+
+    const download = (event) => {
+      const filename = prompt("Enter a filename:", "canvas-image");
+      if (filename) {
+        const canvas = canvasRef.current;
+        let canvasUrl = canvas.toDataURL();
+        const createEl = document.createElement('a');
+        createEl.href = canvasUrl;
+        createEl.download =`${filename}.png`;
+        createEl.click();
+        createEl.remove();
+      }
+    }
+
+    const newFile = (event) => {
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+      
     
     
     return ( 
@@ -24,13 +54,12 @@ export const Navbar = () => {
                   <i class="fa fa-caret-down"></i>
                 </a>
                      <div class="dropdown-content">
-                        <a href="#">New...</a>
+                        <a onClick={newFile}>New...</a>
                         <div id="upload">
                         <a onClick={upload}>Open</a>
-                        <input type="file" ref={fileInputRef} id="imageLoader" name="imageLoader"/>
+                        <input type="file" onChange={handleFileChange} ref={fileInputRef} id="imageLoader" name="imageLoader"/>
                         </div>
-                        <a href="#">Save</a>
-                        <a href="#">Save As...</a>
+                        <a onClick={download}>Save As...</a>
                         <a href="#">Properties</a>
 
                      </div>
@@ -44,7 +73,7 @@ export const Navbar = () => {
                      <div class="dropdown-content">
                         <a href="#">Crop</a>
                         <a href="#">Resize</a>
-                        <a href="#">Rotate</a>
+                        <a onClick={() => rotate(canvasRef.current)}>Rotate</a>
                         <a href="#">Flip</a>
                      </div>
             </div> 
@@ -67,8 +96,8 @@ export const Navbar = () => {
                   <i class="fa fa-caret-down"></i>
                 </a>
                      <div class="dropdown-content">
-                        <a href="#">Blur</a>
-                        <a href="#">Link 2</a>
+                     <a onClick={() => gaussianBlur(canvasRef.current)}>GaussianBlur</a>
+                      <a href="#">Link 2</a>
                         <a href="#">Link 3</a>
                      </div>
             </div> 
