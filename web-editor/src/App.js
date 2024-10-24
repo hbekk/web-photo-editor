@@ -1,20 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './App.css';
 import { Navbar } from './js/navbar';
 import { Toolbar } from './js/toolbar';
 
+
+
 function App() {
   const canvasRef = useRef(null);
   const [image, setImage] = useState(null);
-
-  const gaussianBlur = (canvas) => {
-    let src = window.cv.imread(canvas);
-    let dst = new window.cv.Mat();
-    let ksize = new window.cv.Size(9, 9);
-    window.cv.GaussianBlur(src, dst, ksize, 0, 0, window.cv.BORDER_DEFAULT);
-    window.cv.imshow(canvas, dst);
-    src.delete(); dst.delete();
-  }
+  const [showModal, setShowModal] = useState(false);
 
   const rotate = (canvas) => {
     let src = window.cv.imread(canvas);
@@ -33,9 +28,23 @@ function App() {
       img.src = image;
   
       img.onload = () => {
-        ctx.canvas.width = img.width;
-        ctx.canvas.height = img.height;
-        ctx.drawImage(img, 0, 0, img.width, img.height);
+        const maxWidth = window.innerWidth * 0.7; 
+        const maxHeight = window.innerHeight * 0.7;
+        const aspectRatio = img.width / img.height;
+
+        if (img.width > maxWidth || img.height > maxHeight) {
+            if (aspectRatio > 1) {
+                canvas.width = maxWidth;
+                canvas.height = maxWidth / aspectRatio;
+            } else {
+                canvas.height = maxHeight;
+                canvas.width = maxHeight * aspectRatio;
+            }
+        } else {
+            canvas.width = img.width;
+            canvas.height = img.height;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       };
      
     }
@@ -49,7 +58,6 @@ function App() {
     <>
     <Navbar 
     setImage={setImage}
-    gaussianBlur={gaussianBlur}
     rotate={rotate}
     canvasRef={canvasRef}
     />
@@ -60,8 +68,10 @@ function App() {
           ref={canvasRef}
           className="myCanvas"
         ></canvas>
+
     </div>
-  
+
+
     </>
   );
  

@@ -1,12 +1,14 @@
 .toolbar{
     background-color: #3A3737;
     border: 1px solid black;
-    border-radius: 60px;
+    border-radius: 0px;
     height: 400px;
     position: fixed;
     width: 60px;
     top: 25%;
     z-index: 2;
+    filter: drop-shadow(0px 0px 1px #000000);
+
 }
 
 .toolbar ul{
