@@ -1,81 +1,72 @@
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import './App.css';
 import { Navbar } from './js/navbar';
 import { Toolbar } from './js/toolbar';
-
-
+import { Layers } from './js/layers';
+import { CanvasManager } from './js/layers';
 
 function App() {
-  const canvasRef = useRef(null);
-  const [image, setImage] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+    const canvasRef = useRef(null);
+    const [image, setImage] = useState(null);
+    const [canvasManager, setCanvasManager] = useState(null);
+    const maxWidth = window.innerWidth * 0.6; 
+    const maxHeight = window.innerHeight * 0.6;
+    const [layerCount, setLayerCount] = useState(0);
 
-  const rotate = (canvas) => {
-    let src = window.cv.imread(canvas);
-    let dst = new window.cv.Mat();
-    window.cv.rotate(src, dst, window.cv.ROTATE_90_CLOCKWISE);
-    window.cv.imshow(canvas, dst);
-    src.delete();
-    dst.delete();
-  }
+    useEffect(() => {
+        const cm = new CanvasManager('canvas-container');
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    if (image) {
-      const img = new Image();
-      img.src = image;
-  
-      img.onload = () => {
-        const maxWidth = window.innerWidth * 0.7; 
-        const maxHeight = window.innerHeight * 0.7;
-        const aspectRatio = img.width / img.height;
-
-        if (img.width > maxWidth || img.height > maxHeight) {
-            if (aspectRatio > 1) {
-                canvas.width = maxWidth;
-                canvas.height = maxWidth / aspectRatio;
-            } else {
-                canvas.height = maxHeight;
-                canvas.width = maxHeight * aspectRatio;
-            }
-        } else {
-            canvas.width = img.width;
-            canvas.height = img.height;
-        }
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        cm.onCanvasCreated = () => {
+          setLayerCount(cm.canvases.length); 
       };
-     
-    }
-  }, [image]);
+        setCanvasManager(cm);
+    }, []);
 
-
+    useEffect(() => {
+      if (!canvasManager) return;
   
-
+      const maxWidth = window.innerWidth * 0.6; 
+      const maxHeight = window.innerHeight * 0.6;
   
-  return (
-    <>
-    <Navbar 
-    setImage={setImage}
-    rotate={rotate}
-    canvasRef={canvasRef}
-    />
-    <Toolbar/>
-    <div className="canvas-container">
-    <canvas
-          id="canvas"
-          ref={canvasRef}
-          className="myCanvas"
-        ></canvas>
+      canvasManager.createCanvas(maxWidth, maxHeight);
+  
+      const lastCanvas = canvasManager.canvases[canvasManager.canvases.length - 1];
+      const ctx = lastCanvas.getContext("2d");
+  
+      if (image) {
+        const img = new Image();
+        img.src = image;
+  
+        img.onload = () => {
+          const aspectRatio = img.width / img.height;
+  
+          if (img.width > maxWidth || img.height > maxHeight) {
+            if (aspectRatio > 1) {
+              lastCanvas.width = maxWidth;
+              lastCanvas.height = maxWidth / aspectRatio;
+            } else {
+              lastCanvas.height = maxHeight;
+              lastCanvas.width = maxHeight * aspectRatio;
+            }
+          } else {
+            lastCanvas.width = img.width;
+            lastCanvas.height = img.height;
+          }
+          ctx.drawImage(img, 0, 0, lastCanvas.width, lastCanvas.height);
+        };
+      }
+    }, [image, canvasManager]); // Depend on image and canvasManager
 
-    </div>
-
-
-    </>
-  );
- 
+    return (
+        <>
+            <Navbar setImage={setImage} canvasRef={canvasRef} />
+            <Layers  canvasManager={canvasManager} /> 
+            <Toolbar />
+            <div className="canvas-container" id="canvas-container" ref={canvasRef}>
+                <h2>Please create a new image, or import one.</h2>
+            </div>
+        </>
+    );
 }
 
 export default App;
- 

@@ -7,24 +7,37 @@ body, html, h1, ul, a {
   padding: 0;
 }
 
+body::-webkit-scrollbar {
+  display: none;
+}
+
 .canvas-container{
+  position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #2B2B2B;
   width: 100%;
   height: 100%;
-  position: absolute;
   top: 40px;
 
 }
 
 .myCanvas{
   /*border: solid red 1px; */
-  display: block;
+  position: absolute;
   margin-right: 100px;
+  z-index: 1;
   filter: drop-shadow(0px 0px 2px #000000);
  
+}
+
+
+.canvas-container h2 {
+  position: absolute;
+  color: wheat;
+  z-index: 0;
+  font-weight: 500;
 }
 
 

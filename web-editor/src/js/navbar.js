@@ -1,9 +1,10 @@
 import React, { useRef, useState} from "react";
 import '../css/navbar.css';
 import Filters from './effects';
+import ImageEffects from "./image";
 
 
-export const Navbar = ({ setImage, canvasRef, rotate }) => {
+export const Navbar = ({setImage, canvasRef}) => {
     const fileInputRef = useRef(null);
 
     const upload = (event) => {
@@ -66,8 +67,10 @@ export const Navbar = ({ setImage, canvasRef, rotate }) => {
                             <div className="dropdown-content">
                                 <a href="#">Crop</a>
                                 <a href="#">Resize</a>
-                                <a onClick={() => rotate(canvasRef.current)}>Rotate</a>
-                                <a href="#">Flip</a>
+                                <a onClick={() => ImageEffects.rotatecw(canvasRef.current)}>Rotate Clockwise</a>
+                                <a onClick={() => ImageEffects.rotateccw(canvasRef.current)}>Rotate Counter Clockwise</a>
+                                <a onClick={() => ImageEffects.flipHorisontally(canvasRef.current)}>Flip Horizontally</a>
+                                <a onClick={() => ImageEffects.flipVertically(canvasRef.current)}>Flip Vertically</a>
                             </div>
                         </div> 
                     </li>
