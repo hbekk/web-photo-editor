@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import '../css/layers.css';
 
 class CanvasManager {
@@ -17,23 +17,50 @@ class CanvasManager {
         this.container.appendChild(canvas);
         this.canvases.push(canvas); 
         console.log("Canvas created:", canvas.id);
+        console.log(this.canvases)
         this.onCanvasCreated();
     }
 
-    listAll() {
-        return this.canvases.map((canvas, index) => ( 
-            <div className="list-item" key={index}>
-                <a id={canvas.id}>{canvas.id}</a>
-            </div>   
-        ));
+    deleteCanvas(activeIndex) {
+        this.container.removeChild(this.canvases[activeIndex]);
+        this.canvases.splice(activeIndex, 1);
+
+        for (let i = 0; i < this.canvases.length; i++) {
+
+            if (this.canvases[i].id.startsWith("Layer")){
+                this.canvases[i].id = `Layer ${i+1}`; 
+            }
+        }
+
     }
 
-    renderLayers() {
-        return this.listAll();
-    }
 }
 
-const Layers = ({ canvasManager }) => {
+
+const Layers = ({canvasManager, setActiveCanvas}) => {
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    function handleSelectChange(index) {
+        setActiveIndex(index);
+        setActiveCanvas(canvasManager.canvases[index]);
+    } 
+
+    function listAll() {
+        return canvasManager.canvases.map((canvas, index) => {
+            const buttonClassName = activeIndex === index ? 'list-item-active' : 'list-item';
+            return (
+                <button 
+                    key={index}
+                    onClick={() => handleSelectChange(index)} 
+                    id={canvas.id}
+                    className={buttonClassName}
+                >
+                    {canvas.id}
+                </button>
+            );
+        });
+    }
+
     return (
         <div className="layers-container">
             <div className="layers-title">
@@ -42,15 +69,19 @@ const Layers = ({ canvasManager }) => {
             
             <div className="layers-list">
                 {canvasManager && canvasManager.canvases.length > 0 
-                    ? canvasManager.listAll() 
+                    ? listAll() 
                     : <div>No layers available</div>}
             </div>
 
             <div className="layers-bar">
-                <h3>Layers</h3>
+                <button
+                onClick={() => {setActiveIndex(activeIndex - 1); canvasManager.deleteCanvas(activeIndex);}}
+                >
+                Delete
+                </button>
             </div>
         </div>
     );
 };
 
-export { CanvasManager, Layers };
+export { CanvasManager, Layers,};

@@ -1,11 +1,20 @@
-import React, { useRef, useState} from "react";
+import React, { useEffect, useRef, useState} from "react";
 import '../css/navbar.css';
 import Filters from './effects';
 import ImageEffects from "./image";
 
 
-export const Navbar = ({setImage, canvasRef}) => {
+export const Navbar = ({setImage, activeCanvas}) => {
     const fileInputRef = useRef(null);
+    const canvasRef = useRef(null);
+
+    useEffect(() => {
+        if (activeCanvas) {
+            canvasRef.current = activeCanvas;
+        }
+    }, [activeCanvas]);
+ 
+
 
     const upload = (event) => {
         event.preventDefault(); 
@@ -23,7 +32,7 @@ export const Navbar = ({setImage, canvasRef}) => {
     const download = () => {
         const filename = prompt("Enter a filename:", "canvas-image");
         if (filename) {
-            const canvas = canvasRef.current;
+            const canvas = activeCanvas;
             const canvasUrl = canvas.toDataURL();
             const createEl = document.createElement('a');
             createEl.href = canvasUrl;
@@ -34,7 +43,7 @@ export const Navbar = ({setImage, canvasRef}) => {
     };
 
     const newFile = () => {
-        const canvas = canvasRef.current;
+        const canvas = activeCanvas;
         const context = canvas.getContext('2d');
         context.clearRect(0, 0, canvas.width, canvas.height);
     };

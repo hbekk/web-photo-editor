@@ -12,6 +12,7 @@ function App() {
     const maxWidth = window.innerWidth * 0.6; 
     const maxHeight = window.innerHeight * 0.6;
     const [layerCount, setLayerCount] = useState(0);
+    const [activeCanvas, setActiveCanvas] = useState(null);
 
     useEffect(() => {
         const cm = new CanvasManager('canvas-container');
@@ -31,6 +32,7 @@ function App() {
       canvasManager.createCanvas(maxWidth, maxHeight);
   
       const lastCanvas = canvasManager.canvases[canvasManager.canvases.length - 1];
+      setActiveCanvas(lastCanvas); 
       const ctx = lastCanvas.getContext("2d");
   
       if (image) {
@@ -55,15 +57,14 @@ function App() {
           ctx.drawImage(img, 0, 0, lastCanvas.width, lastCanvas.height);
         };
       }
-    }, [image, canvasManager]); // Depend on image and canvasManager
+    }, [image, canvasManager]);
 
     return (
         <>
-            <Navbar setImage={setImage} canvasRef={canvasRef} />
-            <Layers  canvasManager={canvasManager} /> 
+            <Navbar setImage={setImage} activeCanvas={activeCanvas} />
+            <Layers  canvasManager={canvasManager} setActiveCanvas={setActiveCanvas} /> 
             <Toolbar />
             <div className="canvas-container" id="canvas-container" ref={canvasRef}>
-                <h2>Please create a new image, or import one.</h2>
             </div>
         </>
     );
