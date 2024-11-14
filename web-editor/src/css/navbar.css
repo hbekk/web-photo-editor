@@ -4,7 +4,7 @@
     display: flex;
     position: fixed;
     align-items: center; 
-    height: 45px;
+    height: 40px;
     border-bottom: 1px solid black;
     top: 0;
     z-index: 2;
@@ -44,8 +44,9 @@
     margin-right: 5px;
     font-size: 15px;
     cursor: default;
-    font-weight: 900;
+    font-weight: 600;
 }
+
 
 .dropbtn {
     color: white;

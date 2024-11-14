@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState} from "react";
 import '../css/navbar.css';
 import Filters from './effects';
 import ImageEffects from "./image";
+import { Toolbar } from "./toolbar";
 
 
 export const Navbar = ({setImage, activeCanvas}) => {
@@ -54,7 +55,7 @@ export const Navbar = ({setImage, activeCanvas}) => {
             <nav className="navbar">
                 <ul>
                     <li>
-                        <a className="logo">Web Editor &nbsp;|</a>
+                        <h1 className="logo">Web Editor &nbsp;|</h1>
                     </li>
                     <li>
                         <div className="dropdown">
@@ -104,6 +105,7 @@ export const Navbar = ({setImage, activeCanvas}) => {
                         </div> 
                     </li>
                 </ul>
+
             </nav>
            
 
