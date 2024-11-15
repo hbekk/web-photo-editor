@@ -56,27 +56,46 @@
 .list-item {
     display: flex;
     background-color: #3A3737;
-    align-items: start;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: left;
+    text-align: left;
     padding: 12px;
     width: 100%;
     color: rgb(255, 255, 255);
     font-size: 17px;
     border: none;
     border-bottom: #000000 solid 1px;
+    margin-right: 10px;
+
+}
+
+.icon {
+  font-size: 20px;
+  display: flex;
+  margin-right: 5px;
+}
+
+.lock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 7px;
+  font-size: 15px;
 }
 
 .list-item-active {
   display: flex;
-  background-color: #706f6f;
-  align-items: start;
-  justify-content: flex-start;
-  padding: 12px;
-  width: 100%;
-  color: rgb(255, 255, 255);
-  font-size: 17px;
-  border: none;
-  border-bottom: #000000 solid 1px;
+    background-color: #787878;
+    align-items: center;
+    justify-content: left;
+    text-align: left;
+    padding: 12px;
+    width: 100%;
+    color: rgb(255, 255, 255);
+    font-size: 17px;
+    border: none;
+    border-bottom: #000000 solid 1px;
+    margin-right: 10px;
 }
 
 .list-item:hover {
@@ -121,6 +140,6 @@
   cursor: pointer;
 }
 
-.buttons button:nth-child(2) {
+.buttons button:nth-child(3) {
   font-size: 1.2rem;
 }

@@ -63,12 +63,22 @@
     display: inline-block;
   }
   
-  .dropdown-content {
-    margin-top: 13px;
+
+  .dropdown-content{
+    margin-top: 9px;
     display: none;
     position: absolute;
     background-color: #ffffff;
-    min-width: 160px;
+    min-width: 140px;
+    z-index: 1;
+  }
+
+  .dropdown-content {
+    margin-top: 9px;
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 140px;
     z-index: 1;
   }
   

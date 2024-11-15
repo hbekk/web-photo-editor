@@ -66,7 +66,7 @@ export const Navbar = ({setImage, activeCanvas}) => {
                                     <a onClick={upload}>Open</a>
                                     <input type="file" onChange={handleFileChange} ref={fileInputRef} id="imageLoader" name="imageLoader"/>
                                 </div>
-                                <a onClick={download}>Save As...</a>
+                                <a onClick={download}>Save Layer...</a>
                                 <a href="#">Properties</a>
                             </div>
                         </div> 

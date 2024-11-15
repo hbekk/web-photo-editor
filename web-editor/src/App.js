@@ -10,11 +10,13 @@ function App() {
     const canvasRef = useRef(null);
     const [image, setImage] = useState(null);
     const [canvasManager, setCanvasManager] = useState(null);
-    const maxWidth = window.innerWidth * 0.6; 
-    const maxHeight = window.innerHeight * 0.6;
+    const maxHeight = 720;
+    const maxWidth = 1280; 
     const [layerCount, setLayerCount] = useState(0);
     const [activeCanvas, setActiveCanvas] = useState(null);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [dragging, setDragging] = useState(false);
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
 
 
     useEffect(() => {
@@ -29,6 +31,7 @@ function App() {
       if (!canvasManager) return;
 
       canvasManager.createCanvas(maxWidth, maxHeight);
+      canvasManager.canvases[0].isBase = true;
 
       const latestCanvas = canvasManager.canvases[canvasManager.canvases.length - 1]
 
@@ -65,6 +68,52 @@ function App() {
         };
       }
     }, [image, canvasManager]);
+
+    const handleMouseDown = (e) => {
+      if (activeCanvas) {
+          const rect = activeCanvas.getBoundingClientRect();
+          setOffset({
+              x: e.clientX - rect.left,
+              y: e.clientY - rect.top,
+          });
+          setDragging(true);
+      }
+  };
+
+  const handleMouseMove = (e) => {
+      if (dragging && activeCanvas) {
+          const rect = canvasRef.current.getBoundingClientRect();
+          const x = e.clientX - offset.x - rect.left;
+          const y = e.clientY - offset.y - rect.top;
+
+          activeCanvas.style.left = `${x}px`;
+          activeCanvas.style.top = `${y}px`;
+      }
+  };
+
+  const handleMouseUp = () => {
+      setDragging(false);
+  };
+
+  useEffect(() => {
+      if (activeCanvas) {
+
+        if (activeCanvas.isBase == false) {
+          const container = canvasRef.current;
+
+          container.addEventListener('mousedown', handleMouseDown);
+          window.addEventListener('mousemove', handleMouseMove);
+          window.addEventListener('mouseup', handleMouseUp);
+
+          return () => {
+              container.removeEventListener('mousedown', handleMouseDown);
+              window.removeEventListener('mousemove', handleMouseMove);
+              window.removeEventListener('mouseup', handleMouseUp);
+          };
+        }
+          
+      }
+  }, [activeCanvas, dragging, offset]);
 
     return (
         <>

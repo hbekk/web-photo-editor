@@ -24,24 +24,7 @@ body::-webkit-scrollbar {
 }
 
 .myCanvas{
-  /*border: solid red 1px; */
   position: absolute;
   margin-right: 100px;
   z-index: 1; 
-}
-
-
-.canvas-container h2 {
-  position: absolute;
-  color: wheat;
-  z-index: 0;
-  font-weight: 500;
-}
-
-
-p {
-  font-size: 150px;
-  font-weight: 700;
-  color: white;
-  text-align: center;
 }

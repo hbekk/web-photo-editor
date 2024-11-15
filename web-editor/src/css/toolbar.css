@@ -65,9 +65,10 @@
     position: fixed;
     width: 30%;
     top: 0%;
-    left: 80%;
+    left: 70%;
     z-index: 3;
 }
+
 
 .text-adjust li {
     list-style: none;
@@ -81,4 +82,11 @@
     background-color: #707070;
     border-radius: 5px;
 
+}
+
+.color-picker input {
+    border: none;
+    padding: 0;
+    margin: 0;
+    background-color: #3A3737;
 }
