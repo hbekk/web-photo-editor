@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import '../css/toolbar.css';
 import { RxText } from "react-icons/rx";
 import { IoBrushSharp } from "react-icons/io5";
-import { LuBoxSelect, LuLasso } from "react-icons/lu";
+import {LuBoxSelect, LuLasso, LuPointer} from "react-icons/lu";
 import { BsEyedropper } from "react-icons/bs";
 import { PiPaintBucketBold } from "react-icons/pi";
 import { MdTextFields } from "react-icons/md";
 import { IoShapesSharp } from "react-icons/io5";
+import {TbLassoPolygon} from "react-icons/tb";
+
 import {useCanvasContext} from "../context/CanvasProvider";
-
-
+import {LiaMousePointerSolid} from "react-icons/lia";
+import {BiPointer} from "react-icons/bi";
+import Filters from "../utils/effects";
+import {FaAngleDown} from "react-icons/fa";
 
 const ColorPicker = ({ color, onChange, activeCanvas }) => {
     return (
@@ -28,7 +32,14 @@ const Toolbar = () => {
     const [fontsize, setFontSize] = useState(20); 
     const [color, setColor] = useState("#ffffff");
 
-    const { canvasManager, width, height, setActiveIndex, setActiveCanvas, activeCanvas} = useCanvasContext();
+    const { canvasManager,
+            width,
+            height,
+            setActiveIndex,
+            setActiveCanvas,
+            activeCanvas,
+            setActiveTool,
+            activeTool, setSelectionCanvas} = useCanvasContext();
 
 
     const fonts = [
@@ -36,7 +47,11 @@ const Toolbar = () => {
         "Verdana", 
         "Impact", 
         "Times New Roman", 
-        "Inter"
+        "Tahoma",
+        "Georgia",
+        "Courier New",
+        "Garamond",
+        "Trebuchet MS"
       ];
 
     const thickness = [
@@ -99,6 +114,7 @@ const Toolbar = () => {
 
         setActiveIndex(canvasManager.canvases.length - 1)
         setActiveCanvas(newCanvas);
+        handleSelection("pointer");
     };
 
     const handleSliderChange = (e) => {
@@ -167,17 +183,31 @@ const Toolbar = () => {
         setActiveCanvas(newCanvas);
     };
 
-    
+    // Selection Handling
+
+    const handleSelection = (tool) => {
+
+        if (activeTool === "selection") {
+            let selectionCanvasTemp = document.getElementById("selection-canvas");
+            if (selectionCanvasTemp) {
+                document.body.removeChild(selectionCanvasTemp);
+                setSelectionCanvas(null);
+            }
+        }
+
+        console.log(`Tool selected: ${tool}`);
+        setActiveTool(tool);
+    }
 
 
 
     return (
-        <div className='toolbar-container'> 
+        <div className='toolbar-container'>
             {activeCanvas?.isTextLayer && (
                 <div className='text-adjust'>
                     <MdTextFields />
                     <div className="dropdown">
-                        <a className="dropbtn">Size: {activeCanvas.fontsize}px</a>
+                        <a className="dropbtn">Size: {activeCanvas.fontsize}px <i><FaAngleDown/></i></a>
                         <div className="dropdown-content">
                             <input 
                                 type="range" 
@@ -190,9 +220,8 @@ const Toolbar = () => {
                             />
                         </div>
                     </div> 
-                        <ColorPicker color={activeCanvas.color} onChange={handleColorChange} />
                         <div className="dropdown">
-                            <a className="dropbtn">Font: {activeCanvas.font}</a>
+                            <a className="dropbtn">Font: {activeCanvas.font} <i><FaAngleDown/></i></a>
                             <div className="dropdown-content">
                                 {fonts.map((fontName, index) => (
                                 <a 
@@ -205,27 +234,50 @@ const Toolbar = () => {
                                 ))}
                             </div>
                             </div>
-                    </div> 
+                    <ColorPicker color={activeCanvas.color} onChange={handleColorChange} />
+
+                </div>
             )}
+
+            {activeTool === "selection"  && (
+                <div className='text-adjust'>
+                    <h4>Selection</h4>
+                    <button onClick={() => handleSelection("pointer")}>Complete Selection</button>
+                </div>
+            )}
+
+
             <nav className="toolbar">
                 <ul>
                     <li>
-                        <a onClick={addText}><RxText /></a>
+                        <a className={activeTool === "pointer" ? "active" : ""}
+                           onClick={() => handleSelection("pointer")}>
+                            <BiPointer/>
+                        </a>
                     </li>
                     <li>
-                        <a ><IoBrushSharp /></a>
+                        <a onClick={() => {addText()}}><RxText/></a>
                     </li>
                     <li>
-                        <a onClick={addShape}><IoShapesSharp /></a>
+                        <a><IoBrushSharp/></a>
                     </li>
                     <li>
-                        <a><LuBoxSelect /></a>
+                        <a onClick={addShape}><IoShapesSharp/></a>
                     </li>
                     <li>
-                        <a><LuLasso /></a>
+                        <a className={activeTool === "selection" ? "active" : ""}
+                           onClick={() => handleSelection("selection")}>
+                            <LuBoxSelect/>
+                        </a>
                     </li>
                     <li>
-                        <a><PiPaintBucketBold /></a>
+                        <a><LuLasso/></a>
+                    </li>
+                    <li>
+                        <a><TbLassoPolygon/></a>
+                    </li>
+                    <li>
+                        <a><PiPaintBucketBold/></a>
                     </li>
                 </ul>
             </nav>
@@ -233,4 +285,4 @@ const Toolbar = () => {
     );
 };
 
-export { Toolbar };
+export {Toolbar};

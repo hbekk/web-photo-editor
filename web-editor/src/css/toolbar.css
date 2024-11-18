@@ -2,11 +2,12 @@
     background-color: #3A3737;
     border: 1px solid black;
     border-radius: 0px;
-    height: 350px;
+    height: 460px;
     position: fixed;
-    width: 4.5em;
-    top: 30vh;
+    width: 4em;
+    top: calc(50vh + 25px);
     z-index: 2;
+    transform: translate(0, -50%);
     filter: drop-shadow(0px 0px 1px #000000);
 
 }
@@ -16,7 +17,7 @@
     width: 100%;
 }
 
-.toolbar ul{
+.toolbar ul {
     padding: 0;
     font-size: 1.5em;
     width: 100%;
@@ -25,21 +26,30 @@
     flex-direction: column;
     list-style-type: none;
     justify-content: center;
+    align-items: center;
 }
 
-.toolbar a{
+.toolbar a {
     position: relative;
-    margin: 14px;
-    display: block;
-    color: rgb(255, 255, 255);
+    margin: 9px;
+    display: flex;
     align-items: center;
     justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: rgb(255, 255, 255);
     text-align: center;
+    text-decoration: none;
 }
 
-.toolbar a:hover{
-   background-color: #242424;
-   border-radius: 3px;
+.toolbar a:hover {
+    background-color: #242424;
+    border-radius: 3px;
+}
+
+.toolbar a.active {
+    background-color: #242424;
+    border-radius: 3px;
 }
 
 .color-container{
@@ -67,6 +77,11 @@
     top: 0%;
     left: 70%;
     z-index: 3;
+}
+
+.text-adjust i {
+    position: relative;
+    top: 2px
 }
 
 

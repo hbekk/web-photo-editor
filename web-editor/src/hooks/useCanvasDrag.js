@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 
-const useCanvasDrag = (activeCanvas, canvasContainerRef) => {
+const useCanvasDrag = (activeCanvas, canvasContainerRef, activeTool) => {
     const [dragging, setDragging] = useState(false);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
 
     const handleMouseDown = (e) => {
-        if (activeCanvas) {
+        if (activeCanvas && activeTool === "pointer") {
             const rect = activeCanvas.getBoundingClientRect();
             setOffset({
                 x: e.clientX - rect.left,
@@ -16,7 +16,7 @@ const useCanvasDrag = (activeCanvas, canvasContainerRef) => {
     };
 
     const handleMouseMove = (e) => {
-        if (dragging && activeCanvas) {
+        if (dragging && activeCanvas && activeTool === "pointer" ) {
             const containerRect = canvasContainerRef.current.getBoundingClientRect();
             const x = e.clientX - offset.x - containerRect.left;
             const y = e.clientY - offset.y - containerRect.top;
@@ -31,7 +31,7 @@ const useCanvasDrag = (activeCanvas, canvasContainerRef) => {
     };
 
     useEffect(() => {
-        if (activeCanvas && !activeCanvas.isBase) {
+        if (activeCanvas && !activeCanvas.isBase && activeTool === "pointer") {
             const container = canvasContainerRef.current;
 
             container.addEventListener('mousedown', handleMouseDown);
@@ -44,7 +44,7 @@ const useCanvasDrag = (activeCanvas, canvasContainerRef) => {
                 window.removeEventListener('mouseup', handleMouseUp);
             };
         }
-    }, [activeCanvas, dragging, offset]);
+    }, [activeCanvas, dragging, offset, activeTool]);
 
     return { dragging, offset };
 };

@@ -6,7 +6,8 @@
     right:  0;
     position: fixed;
     width: 13rem;
-    top: 25vh;
+    top: calc(50vh + 25px);
+    transform: translate(0, -50%);
     z-index: 2;
     filter: drop-shadow(0px 0px 1px #000000);
 }

@@ -13,7 +13,7 @@ class Filters {
             
     }
 
-    static sobel(canvas) {
+    static sobelx(canvas) {
         if (canvas.isTextLayer != true) {
             let src = window.cv.imread(canvas);
             //let dst = new window.cv.Mat();
@@ -31,7 +31,24 @@ class Filters {
         } else {
             alert("Shape / Text elements cannot be filtered")
         }
-         
+    }
+
+    static sobely(canvas) {
+        if (canvas.isTextLayer != true) {
+            let src = window.cv.imread(canvas);
+            let dsty = new window.cv.Mat();
+            window.cv.cvtColor(src, src, window.cv.COLOR_RGB2GRAY, 0);
+            // You can try more different parameters
+            //window.cv.Sobel(src, dstx, window.cv.CV_8U, 1, 0, 3, 1, 0, window.cv.BORDER_DEFAULT);
+            window.cv.Sobel(src, dsty, window.cv.CV_8U, 0, 1, 3, 1, 0, window.cv.BORDER_DEFAULT);
+            //window.cv.Scharr(src, dstx, window.cv.CV_8U, 1, 0, 1, 0, window.cv.BORDER_DEFAULT);
+            window.cv.Scharr(src, dsty, window.cv.CV_8U, 0, 1, 1, 0, window.cv.BORDER_DEFAULT);
+            //window.cv.imshow(canvas, dstx);
+            window.cv.imshow(canvas, dsty);
+            src.delete(); dsty.delete();
+        } else {
+            alert("Shape / Text elements cannot be filtered")
+        }
     }
 
     static binary(canvas) {

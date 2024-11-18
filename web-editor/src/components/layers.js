@@ -75,7 +75,7 @@ class CanvasManager {
          // Array Logic
         const tempCanvas = this.canvases[activeIndex];
         this.canvases[activeIndex] = this.canvases[activeIndex + 1];
-        this.canvases[activeIndex + 1] = tempCanvas; 
+        this.canvases[activeIndex + 1] = tempCanvas;
     }
 
     reorderDownCanvas(activeIndex) {
@@ -151,8 +151,8 @@ const Layers = () => {
         if (index == 0 || index == 1) {
             alert("You cannot rearrange base layer");
         } else {
+            canvasManager.reorderDownCanvas(index);
             handleSelectChange(index - 1)
-            canvasManager.reorderDownCanvas(index); 
         }
         
     } 

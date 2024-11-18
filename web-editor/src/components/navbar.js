@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import '../css/navbar.css';
-import { useCanvasContext } from '../context/CanvasProvider'; // Import your context
+import { useCanvasContext } from '../context/CanvasProvider';
 import Filters from '../utils/effects';
 import ImageEffects from "./image";
+import { FaAngleDown } from "react-icons/fa";
 
 export const Navbar = () => {
     const { setImage, activeCanvas } = useCanvasContext(); // Access setImage and activeCanvas from context
@@ -52,11 +53,11 @@ export const Navbar = () => {
             <nav className="navbar">
                 <ul>
                     <li>
-                        <h1 className="logo">Web Editor &nbsp;|</h1>
+                        <h1 className="logo">Web Photo Editor &nbsp;|</h1>
                     </li>
                     <li>
                         <div className="dropdown">
-                            <a className="dropbtn">File <i className="fa fa-caret-down"></i></a>
+                            <a className="dropbtn">File</a>
                             <div className="dropdown-content">
                                 <a onClick={newFile}>New...</a>
                                 <div id="upload">
@@ -96,7 +97,8 @@ export const Navbar = () => {
                             <a className="dropbtn">Effects <i className="fa fa-caret-down"></i></a>
                             <div className="dropdown-content">
                                 <a onClick={() => Filters.gaussianBlur(canvasRef.current)}>Gaussian Blur</a>
-                                <a onClick={() => Filters.sobel(canvasRef.current)}>Sobel</a>
+                                <a onClick={() => Filters.sobelx(canvasRef.current)}>Sobel X</a>
+                                <a onClick={() => Filters.sobely(canvasRef.current)}>Sobel Y</a>
                                 <a onClick={() => Filters.binary(canvasRef.current)}>Binary</a>
                             </div>
                         </div>

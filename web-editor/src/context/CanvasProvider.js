@@ -8,6 +8,8 @@ export const CanvasProvider = ({ children }) => {
     const canvasRef = useRef(null);
     const [activeCanvas, setActiveCanvas] = useState(null);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [activeTool, setActiveTool] = useState("pointer");
+    const [selectionCanvas, setSelectionCanvas] = useState(null); // Store the selection canvas
     const [layerCount, setLayerCount] = useState(0);
     const [image, setImage] = useState(null);
     const maxWidth = 1280;
@@ -30,6 +32,8 @@ export const CanvasProvider = ({ children }) => {
                 setActiveCanvas,
                 activeIndex,
                 setActiveIndex,
+                setActiveTool,
+                activeTool,
                 image,
                 setImage,
                 maxWidth,
@@ -37,6 +41,8 @@ export const CanvasProvider = ({ children }) => {
                 setLayerCount,
                 canvasRef,
                 layerCount,
+                selectionCanvas,
+                setSelectionCanvas,
             }}
         >
             {children}

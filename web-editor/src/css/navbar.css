@@ -13,12 +13,11 @@
 
 
 .navbar ul {
-    flex: 1;
+    display: flex;
     width: 100%;
-    display: inline-flex;
-    flex-direction: row;
     list-style-type: none;
     justify-content: flex-start;
+    align-items: center;
     margin-left: 20px;
   }
 
@@ -28,7 +27,16 @@
     text-decoration: none;
     color: white;
     font-weight: 600;
+    justify-content: center;
+    align-items: center;
 }
+.navbar i {
+    color: white;
+    align-content: center;
+    position: relative;
+    top: 2px;
+}
+
 
 .navbar input{
     display: none;

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useCanvasContext } from '../context/CanvasProvider';
 import useCanvasDrag from "../hooks/useCanvasDrag";
+import useCanvasSelect from "../hooks/useCanvasSelect";
 
 
 function CanvasContainer() {
@@ -9,13 +10,19 @@ function CanvasContainer() {
             maxWidth,
             maxHeight, canvasRef,
             setActiveCanvas,
-            setActiveIndex, activeCanvas } = useCanvasContext();
+            setActiveIndex, activeCanvas, activeTool, setSelectionCanvas, selectionCanvas } = useCanvasContext();
 
-    const { dragging } = useCanvasDrag(activeCanvas, canvasRef);
+    const { dragging } = useCanvasDrag(activeCanvas, canvasRef, activeTool);
+    const { selection, isSelecting } = useCanvasSelect(activeCanvas, canvasRef, activeTool, setSelectionCanvas, selectionCanvas);
+
+
 
     useEffect(() => {
         if (!canvasManager) return;
-
+        if (activeTool === "selection") {
+            alert("Please finish selection before creating a new layer");
+            return;
+        }
         canvasManager.createCanvas(maxWidth, maxHeight);
         canvasManager.canvases[0].isBase = true;
 
@@ -55,9 +62,12 @@ function CanvasContainer() {
         }
     }, [image, canvasManager]);
     return (
-        <div className="canvas-container" id="canvas-container" ref={canvasRef}></div>
-)
-    ;
+
+        <div className="canvas-container" id="canvas-container" ref={canvasRef}>
+
+        </div>
+    )
+        ;
 }
 
 export default CanvasContainer;
