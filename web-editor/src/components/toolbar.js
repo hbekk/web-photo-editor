@@ -7,6 +7,7 @@ import { BsEyedropper } from "react-icons/bs";
 import { PiPaintBucketBold } from "react-icons/pi";
 import { MdTextFields } from "react-icons/md";
 import { IoShapesSharp } from "react-icons/io5";
+import {useCanvasContext} from "../context/CanvasProvider";
 
 
 
@@ -23,9 +24,12 @@ const ColorPicker = ({ color, onChange, activeCanvas }) => {
     );
 };
 
-const Toolbar = ({ canvasManager, width, height, setActiveIndex, setActiveCanvas, activeCanvas }) => {
+const Toolbar = () => {
     const [fontsize, setFontSize] = useState(20); 
-    const [color, setColor] = useState("#ffffff"); 
+    const [color, setColor] = useState("#ffffff");
+
+    const { canvasManager, width, height, setActiveIndex, setActiveCanvas, activeCanvas} = useCanvasContext();
+
 
     const fonts = [
         "Arial", 
@@ -156,12 +160,16 @@ const Toolbar = ({ canvasManager, width, height, setActiveIndex, setActiveCanvas
             return;
         }
 
-        ctx.rect(centerX,centerY, 150,100);
-        ctx.stroke();
+        ctx.fillStyle = "white";
+        ctx.fillRect(centerX, centerY, 100, 100);
 
         setActiveIndex(canvasManager.canvases.length - 1)
         setActiveCanvas(newCanvas);
     };
+
+    
+
+
 
     return (
         <div className='toolbar-container'> 

@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef } from 'react';
 import '../css/navbar.css';
-import Filters from './effects';
+import { useCanvasContext } from '../context/CanvasProvider'; // Import your context
+import Filters from '../utils/effects';
 import ImageEffects from "./image";
-import { Toolbar } from "./toolbar";
 
-
-export const Navbar = ({setImage, activeCanvas}) => {
+export const Navbar = () => {
+    const { setImage, activeCanvas } = useCanvasContext(); // Access setImage and activeCanvas from context
     const fileInputRef = useRef(null);
     const canvasRef = useRef(null);
 
@@ -14,18 +14,16 @@ export const Navbar = ({setImage, activeCanvas}) => {
             canvasRef.current = activeCanvas;
         }
     }, [activeCanvas]);
- 
-
 
     const upload = (event) => {
-        event.preventDefault(); 
-        fileInputRef.current.click(); 
+        event.preventDefault();
+        fileInputRef.current.click(); // Trigger file input click
     };
 
     const handleFileChange = (event) => {
-        const file = event.target.files[0]; 
+        const file = event.target.files[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file); 
+            const imageUrl = URL.createObjectURL(file);
             setImage(imageUrl);
         }
     };
@@ -49,8 +47,7 @@ export const Navbar = ({setImage, activeCanvas}) => {
         context.clearRect(0, 0, canvas.width, canvas.height);
     };
 
-    
-    return ( 
+    return (
         <div className="navbar-container">
             <nav className="navbar">
                 <ul>
@@ -64,12 +61,12 @@ export const Navbar = ({setImage, activeCanvas}) => {
                                 <a onClick={newFile}>New...</a>
                                 <div id="upload">
                                     <a onClick={upload}>Open</a>
-                                    <input type="file" onChange={handleFileChange} ref={fileInputRef} id="imageLoader" name="imageLoader"/>
+                                    <input type="file" onChange={handleFileChange} ref={fileInputRef} id="imageLoader" name="imageLoader" />
                                 </div>
                                 <a onClick={download}>Save Layer...</a>
                                 <a href="#">Properties</a>
                             </div>
-                        </div> 
+                        </div>
                     </li>
                     <li>
                         <div className="dropdown">
@@ -82,7 +79,7 @@ export const Navbar = ({setImage, activeCanvas}) => {
                                 <a onClick={() => ImageEffects.flipHorisontally(canvasRef.current)}>Flip Horizontally</a>
                                 <a onClick={() => ImageEffects.flipVertically(canvasRef.current)}>Flip Vertically</a>
                             </div>
-                        </div> 
+                        </div>
                     </li>
                     <li>
                         <div className="dropdown">
@@ -92,7 +89,7 @@ export const Navbar = ({setImage, activeCanvas}) => {
                                 <a href="#">Paste</a>
                                 <a href="#">Cut</a>
                             </div>
-                        </div> 
+                        </div>
                     </li>
                     <li>
                         <div className="dropdown">
@@ -102,13 +99,10 @@ export const Navbar = ({setImage, activeCanvas}) => {
                                 <a onClick={() => Filters.sobel(canvasRef.current)}>Sobel</a>
                                 <a onClick={() => Filters.binary(canvasRef.current)}>Binary</a>
                             </div>
-                        </div> 
+                        </div>
                     </li>
                 </ul>
-
             </nav>
-           
-
         </div>
     );
 };

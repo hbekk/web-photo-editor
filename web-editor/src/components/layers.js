@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import '../css/layers.css';
 import { FaRegTrashAlt } from "react-icons/fa";
 import { CgRename } from "react-icons/cg";
@@ -9,6 +9,8 @@ import { IoShapesSharp } from "react-icons/io5";
 import { FaArrowUp } from "react-icons/fa";
 import { FaArrowDown } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
+import {useCanvasContext} from "../context/CanvasProvider";
+
 
 class CanvasManager {
     constructor(containerId) {
@@ -96,8 +98,12 @@ class CanvasManager {
 }
 
 
-const Layers = ({canvasManager, setActiveCanvas, activeIndex, setActiveIndex}) => {
+const Layers = () => {
     const [layerName, setLayerName] = useState("");
+
+    const { canvasManager,
+        setActiveCanvas,
+        setActiveIndex, activeIndex} = useCanvasContext();
     
     
     function handleSelectChange(index) {
