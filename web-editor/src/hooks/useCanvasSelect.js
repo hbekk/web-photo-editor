@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 
 const useCanvasSelect = (activeCanvas, canvasContainerRef, activeTool, setSelectionCanvas, selectionCanvas) => {
     const [isSelecting, setIsSelecting] = useState(false); // Tracks if a selection is in progress
-    const [selection, setSelection] = useState(null); // Stores selection rectangle coordinates
-
+    const [selection, setSelection] = useState(null);
 
     const handleMouseDown = (e) => {
         if (activeCanvas && activeTool === "selection" ) {
@@ -93,7 +92,7 @@ const useCanvasSelect = (activeCanvas, canvasContainerRef, activeTool, setSelect
         }
     }, [isSelecting, selection, activeCanvas, activeTool]);
 
-    return { selection, isSelecting };
+    return { selection, setSelection, isSelecting };
 };
 
 export default useCanvasSelect;

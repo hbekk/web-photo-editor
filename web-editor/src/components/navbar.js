@@ -1,12 +1,25 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../css/navbar.css';
 import { useCanvasContext } from '../context/CanvasProvider';
 import Filters from '../utils/effects';
 import ImageEffects from "./image";
-import { FaAngleDown } from "react-icons/fa";
+import {crop, lassoCrop, polyCrop} from "../utils/selectionCrop";
+import {lassoCopy, polygonalCopy, rectangleCopy} from "../utils/selectionCopy";
+import {lassoCut, polygonalCut, rectangleCut} from "../utils/selectionCut";
+
 
 export const Navbar = () => {
-    const { setImage, activeCanvas } = useCanvasContext(); // Access setImage and activeCanvas from context
+
+    const { setImage,
+            activeCanvas,
+            selection,
+            activeTool,
+            polygonPoints,
+            lassoPoints,
+            canvasManager,
+            setActiveCanvas,
+            setActiveIndex} = useCanvasContext();
+
     const fileInputRef = useRef(null);
     const canvasRef = useRef(null);
 
@@ -48,14 +61,69 @@ export const Navbar = () => {
         context.clearRect(0, 0, canvas.width, canvas.height);
     };
 
+    // CUT, CROP AND COPY
+    const handleCrop = () => {
+        const canvas = activeCanvas;
+
+        if (activeTool === "selection") {
+            crop(canvas,selection);
+        }
+
+        if (activeTool === "poly-selection") {
+            polyCrop(canvas, polygonPoints);
+        }
+
+        if (activeTool === "lasso-selection") {
+            lassoCrop(canvas, lassoPoints)
+        }
+
+    }
+
+    const handleCopy = () => {
+        const canvas = activeCanvas;
+
+
+        if (activeTool === "selection") {
+            rectangleCopy(canvas, selection, canvasManager);
+        }
+        if (activeTool === "poly-selection") {
+            polygonalCopy(canvas, polygonPoints, canvasManager);
+        }
+        if (activeTool === "lasso-selection") {
+            lassoCopy(canvas, lassoPoints, canvasManager);
+        }
+
+        setActiveCanvas(canvasManager.canvases[canvasManager.canvases.length - 1]);
+        setActiveIndex(canvasManager.canvases.length - 1);
+    }
+
+    const handleCut = () => {
+        const canvas = activeCanvas;
+
+        if (activeTool === "selection") {
+            rectangleCut(canvas, selection, canvasManager);
+        }
+        if (activeTool === "poly-selection") {
+            polygonalCut(canvas, polygonPoints, canvasManager);
+        }
+        if (activeTool === "lasso-selection") {
+            lassoCut(canvas, lassoPoints, canvasManager);
+        }
+
+        setActiveCanvas(canvasManager.canvases[canvasManager.canvases.length - 1]);
+        setActiveIndex(canvasManager.canvases.length - 1);
+    }
+
     return (
         <div className="navbar-container">
             <nav className="navbar">
                 <ul>
                     <li>
-                        <h1 className="logo">Web Photo Editor &nbsp;|</h1>
-                    </li>
-                    <li>
+                        <img src="/logo.webp" alt="Logo"/>
+                        <h1 className="logo">Web Photo Editor &nbsp;|
+                    </h1>
+                </li>
+                <li>
                         <div className="dropdown">
                             <a className="dropbtn">File</a>
                             <div className="dropdown-content">
@@ -73,11 +141,13 @@ export const Navbar = () => {
                         <div className="dropdown">
                             <a className="dropbtn">Image <i className="fa fa-caret-down"></i></a>
                             <div className="dropdown-content">
-                                <a href="#">Crop</a>
+                                <a onClick={() => handleCrop()}>Crop</a>
                                 <a href="#">Resize</a>
                                 <a onClick={() => ImageEffects.rotatecw(canvasRef.current)}>Rotate Clockwise</a>
-                                <a onClick={() => ImageEffects.rotateccw(canvasRef.current)}>Rotate Counter Clockwise</a>
-                                <a onClick={() => ImageEffects.flipHorisontally(canvasRef.current)}>Flip Horizontally</a>
+                                <a onClick={() => ImageEffects.rotateccw(canvasRef.current)}>Rotate Counter
+                                    Clockwise</a>
+                                <a onClick={() => ImageEffects.flipHorisontally(canvasRef.current)}>Flip
+                                    Horizontally</a>
                                 <a onClick={() => ImageEffects.flipVertically(canvasRef.current)}>Flip Vertically</a>
                             </div>
                         </div>
@@ -86,9 +156,8 @@ export const Navbar = () => {
                         <div className="dropdown">
                             <a className="dropbtn">Clipboard <i className="fa fa-caret-down"></i></a>
                             <div className="dropdown-content">
-                                <a href="#">Copy</a>
-                                <a href="#">Paste</a>
-                                <a href="#">Cut</a>
+                                <a onClick={() => handleCopy()}>Copy & Paste</a>
+                                <a onClick={() => handleCut()}>Cut & Paste</a>
                             </div>
                         </div>
                     </li>

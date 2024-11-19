@@ -39,12 +39,11 @@ class CanvasManager {
         }
 
         if (isShapeLayer) {
-            canvas.shapeSize = 20;
+            canvas.shapeSize = 1;
             canvas.shapeType = "";
             canvas.shapeColor = "#ffffff";
             canvas.outline = "";
             canvas.outline_color = "";
-
         }
         this.container.append(canvas);
         this.canvases.push(canvas); 
@@ -165,6 +164,13 @@ const Layers = () => {
         }
     }
 
+    function handleNew() {
+        const width = canvasManager.canvases[0].width;
+        const height = canvasManager.canvases[0].height;
+        canvasManager.createCanvas(width, height);
+        handleSelectChange(canvasManager.canvases.length - 1);
+    }
+
     function listAll() {
         return canvasManager.canvases
             .slice() 
@@ -209,9 +215,9 @@ const Layers = () => {
                 
                 <div className="buttons"> 
                 <button
-                onClick={() => {handleRename(activeIndex)}}
-                alt = "Rename"
-                title = "Rename Layer"
+                onClick={() => {handleNew()}}
+                alt = "New Canvas"
+                title = "New Canvas"
                 >
                 <FaPlus />
                 </button>

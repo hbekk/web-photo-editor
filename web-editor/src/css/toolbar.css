@@ -45,11 +45,16 @@
 .toolbar a:hover {
     background-color: #242424;
     border-radius: 3px;
+    cursor: pointer;
+
 }
 
 .toolbar a.active {
     background-color: #242424;
     border-radius: 3px;
+}
+.tool {
+    cursor: default;
 }
 
 .color-container{
@@ -66,17 +71,16 @@
 
 .text-adjust {
     display: inline-flex;
-    background-color: #3A3737;
-    justify-content: start;
+    justify-content: end;
     align-items: center;
     color: white;
     border-radius: 0px;
     height: 40px;
     position: fixed;
-    width: 30%;
-    top: 0%;
-    left: 70%;
-    z-index: 3;
+    width: 40%;
+    right: 0;
+    z-index: 5;
+    background-color: transparent;
 }
 
 .text-adjust i {
@@ -96,7 +100,6 @@
     cursor: pointer;
     background-color: #707070;
     border-radius: 5px;
-
 }
 
 .color-picker input {
@@ -104,4 +107,18 @@
     padding: 0;
     margin: 0;
     background-color: #3A3737;
+}
+
+.confirm-btn {
+    border: none;
+    padding: 5px;
+    margin-left: 10px;
+    color: white;
+    background-color: #242424;
+    border-radius: 4px;
+}
+
+.confirm-btn:hover {
+    background-color: #474747;
+    cursor: pointer;
 }

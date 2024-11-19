@@ -10,11 +10,9 @@ function CanvasContainer() {
             maxWidth,
             maxHeight, canvasRef,
             setActiveCanvas,
-            setActiveIndex, activeCanvas, activeTool, setSelectionCanvas, selectionCanvas } = useCanvasContext();
-
-    const { dragging } = useCanvasDrag(activeCanvas, canvasRef, activeTool);
-    const { selection, isSelecting } = useCanvasSelect(activeCanvas, canvasRef, activeTool, setSelectionCanvas, selectionCanvas);
-
+            setActiveIndex,
+            activeTool,
+            } = useCanvasContext();
 
 
     useEffect(() => {
@@ -62,9 +60,8 @@ function CanvasContainer() {
         }
     }, [image, canvasManager]);
     return (
-
-        <div className="canvas-container" id="canvas-container" ref={canvasRef}>
-
+        <div className="canvas-container" id="canvas-container" ref={canvasRef}
+             style={{ cursor: activeTool === "selection" ? "crosshair" : "default" }}>
         </div>
     )
         ;

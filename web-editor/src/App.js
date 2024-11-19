@@ -4,10 +4,11 @@ import { Navbar } from './components/navbar';
 import { Toolbar } from './components/toolbar';
 import { Layers } from './components/layers';
 import { CanvasProvider } from './context/CanvasProvider';
-import CanvasContainer from './components/CanvasContainer'; // Import the CanvasContainer
-
+import CanvasContainer from './components/CanvasContainer';
 
 function App() {
+
+
     return (
         <CanvasProvider>
             <Navbar />

@@ -1,5 +1,11 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { CanvasManager } from '../components/layers';
+import useCanvasSelect from "../hooks/useCanvasSelect";
+import useCanvasDrag from "../hooks/useCanvasDrag";
+import usePolygonalSelect from "../hooks/usePolygonalSelect";
+import useLassoSelect from "../hooks/useLassoSelect";
+import useDrawing from "../hooks/useDrawing";
+import useEraser from "../hooks/useEraser";
 
 const CanvasContext = createContext();
 
@@ -12,8 +18,26 @@ export const CanvasProvider = ({ children }) => {
     const [selectionCanvas, setSelectionCanvas] = useState(null); // Store the selection canvas
     const [layerCount, setLayerCount] = useState(0);
     const [image, setImage] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalContent, setModalContent] = useState("");
     const maxWidth = 1280;
     const maxHeight = 720;
+
+    const [brushSize, setBrushSize] = useState(10);
+    const [brushColor, setBrushColor] = useState("#ffffff");
+    const [drawPattern, setDrawPattern] = useState("Spray");
+
+
+    const { selection, setSelection, isSelecting } = useCanvasSelect(activeCanvas, canvasRef, activeTool, setSelectionCanvas, selectionCanvas);
+    const { polygonPoints, setPolygonPoints, isPolygonSelecting } = usePolygonalSelect(activeCanvas, canvasRef, activeTool, setSelectionCanvas, selectionCanvas);
+    const {lassoPoints, setLassoPoints } = useLassoSelect(activeCanvas, canvasRef, activeTool, setSelectionCanvas, selectionCanvas);
+    const { dragging } = useCanvasDrag(activeCanvas, canvasRef, activeTool);
+    const { drawing } = useDrawing(activeCanvas, canvasRef, activeTool, setSelectionCanvas, selectionCanvas, brushColor, brushSize, drawPattern);
+    const { erasing } = useEraser(activeCanvas, canvasRef, activeTool, setSelectionCanvas, selectionCanvas, brushSize);
+
+
+
+
 
     useEffect(() => {
         const cm = new CanvasManager('canvas-container');
@@ -43,6 +67,21 @@ export const CanvasProvider = ({ children }) => {
                 layerCount,
                 selectionCanvas,
                 setSelectionCanvas,
+                selection,
+                setSelection,
+                polygonPoints,
+                setPolygonPoints,
+                isPolygonSelecting,
+                lassoPoints,
+                setLassoPoints,
+                setBrushColor,
+                setBrushSize,
+                brushSize,
+                brushColor,
+                drawPattern,
+                setDrawPattern,
+                modalVisible, setModalVisible,
+                modalContent, setModalContent
             }}
         >
             {children}
