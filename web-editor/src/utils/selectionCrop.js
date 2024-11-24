@@ -1,4 +1,3 @@
-// Crop function for rectangular selections
 export const crop = (canvas, selection) => {
     if (selection == null) {
         alert("Please make selection first");

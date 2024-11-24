@@ -20,12 +20,15 @@ export const CanvasProvider = ({ children }) => {
     const [image, setImage] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalContent, setModalContent] = useState("");
-    const maxWidth = 1280;
-    const maxHeight = 720;
+    const [maxWidth, setWidth] = useState(0);
+    const [maxHeight, setHeight] = useState(0);
+    const [BG, setBG] = useState("transparent");
 
     const [brushSize, setBrushSize] = useState(10);
     const [brushColor, setBrushColor] = useState("#ffffff");
     const [drawPattern, setDrawPattern] = useState("Spray");
+    const [shapeColor, setShapeColor] = useState("#ffffff");
+    const [shapeOutlineColor, setShapeOutlineColor] = useState("#000000");
 
 
     const { selection, setSelection, isSelecting } = useCanvasSelect(activeCanvas, canvasRef, activeTool, setSelectionCanvas, selectionCanvas);
@@ -81,7 +84,15 @@ export const CanvasProvider = ({ children }) => {
                 drawPattern,
                 setDrawPattern,
                 modalVisible, setModalVisible,
-                modalContent, setModalContent
+                modalContent, setModalContent,
+                shapeColor,
+                setShapeColor,
+                shapeOutlineColor,
+                setShapeOutlineColor,
+                setHeight,
+                setWidth,
+                BG,
+                setBG,
             }}
         >
             {children}

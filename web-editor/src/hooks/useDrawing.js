@@ -7,49 +7,61 @@ const useDrawing = (activeCanvas, canvasContainerRef, activeTool, setSelectionCa
     const handleMouseDown = (e) => {
         if (activeCanvas && activeTool === "brush") {
             const rect = activeCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const scaleX = activeCanvas.width / rect.width;
+            const scaleY = activeCanvas.height / rect.height;
+
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
             setDrawingPoints([{ x, y }]);
             setIsDrawing(true);
-            setSelectionCanvas(activeCanvas);
         }
     };
 
     const handleMouseMove = (e) => {
         if (!isDrawing || activeTool !== "brush") return;
-        const rect = activeCanvas.getBoundingClientRect();
-        const currentX = e.clientX - rect.left;
-        const currentY = e.clientY - rect.top;
 
-        // Add the current mouse position to the lasso path
+        const rect = activeCanvas.getBoundingClientRect();
+        const scaleX = activeCanvas.width / rect.width;
+        const scaleY = activeCanvas.height / rect.height;
+
+        const currentX = (e.clientX - rect.left) * scaleX;
+        const currentY = (e.clientY - rect.top) * scaleY;
+
         setDrawingPoints((prevPoints) => [...prevPoints, { x: currentX, y: currentY }]);
 
-        if (selectionCanvas) {
-            const ctx = selectionCanvas.getContext("2d");
+        if (activeCanvas) {
+            const ctx = activeCanvas.getContext("2d");
+            ctx.globalCompositeOperation = "source-over";
+            ctx.globalAlpha = 1.0;
 
             if (drawPattern === "Spray") {
-                const offsetX = Math.random() * brushSize - brushSize / 2; // Random X offset
-                const offsetY = Math.random() * brushSize  - brushSize/ 2; // Random Y offset
+                for (let i = 0; i < 20; i++) {
+                    const offsetX = (Math.random() - 0.5) * brushSize; // Random X offset
+                    const offsetY = (Math.random() - 0.5) * brushSize; // Random Y offset
+                    const radius = Math.random() * (brushSize / 4); // Random particle size
 
-                ctx.beginPath();
-                ctx.arc(currentX + offsetX, currentY + offsetY, Math.random() * brushSize / 2, 0, Math.PI * 2);
-                ctx.fillStyle = brushColor;
-                ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(currentX + offsetX, currentY + offsetY, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = brushColor;
+                    ctx.fill();
+                }
             }
 
-            // If Brush (or any other pattern) is selected
             if (drawPattern === "Square") {
                 ctx.strokeStyle = brushColor;
                 ctx.lineWidth = brushSize;
 
                 ctx.beginPath();
                 drawingPoints.forEach((point, index) => {
-                    ctx.lineTo(point.x, point.y);
+                    if (index === 0) ctx.moveTo(point.x, point.y);
+                    else ctx.lineTo(point.x, point.y);
                 });
                 ctx.stroke();
             }
         }
     };
+
 
     const handleMouseUp = () => {
         if (activeTool !== "brush") return;

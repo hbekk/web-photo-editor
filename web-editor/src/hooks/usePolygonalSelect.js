@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
 const usePolygonSelect = (activeCanvas, canvasContainerRef, activeTool, setSelectionCanvas, selectionCanvas) => {
-    const [isPolygonSelecting, setIsPolygonSelecting] = useState(false); // Track if selection is in progress
-    const [polygonPoints, setPolygonPoints] = useState([]); // Track points of the polygon
+    const [isPolygonSelecting, setIsPolygonSelecting] = useState(false);
+    const [polygonPoints, setPolygonPoints] = useState([]);
 
     const handleMouseDown = (e) => {
         if (activeCanvas && activeTool === "poly-selection") {
@@ -10,16 +10,13 @@ const usePolygonSelect = (activeCanvas, canvasContainerRef, activeTool, setSelec
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
 
-            // If polygon selection is in progress, add a new point
             if (isPolygonSelecting) {
                 setPolygonPoints((prevPoints) => [...prevPoints, { x, y }]);
             } else {
-                // Start a new polygon selection
                 setPolygonPoints([{ x, y }]);
                 setIsPolygonSelecting(true);
             }
 
-            // Initialize selection canvas if not already present
             if (!selectionCanvas) {
                 const newCanvas = document.createElement("canvas");
                 newCanvas.width = rect.width;
@@ -42,10 +39,9 @@ const usePolygonSelect = (activeCanvas, canvasContainerRef, activeTool, setSelec
         const currentX = e.clientX - rect.left;
         const currentY = e.clientY - rect.top;
 
-        // If there's an active selection, we are in the process of selecting points
         if (selectionCanvas) {
             const ctx = selectionCanvas.getContext("2d");
-            ctx.clearRect(0, 0, selectionCanvas.width, selectionCanvas.height); // Clear canvas
+            ctx.clearRect(0, 0, selectionCanvas.width, selectionCanvas.height);
 
             ctx.strokeStyle = "white";
             ctx.lineWidth = 1;
@@ -60,9 +56,8 @@ const usePolygonSelect = (activeCanvas, canvasContainerRef, activeTool, setSelec
                 }
             });
 
-            // Draw the current "edge" as the user moves the mouse
             if (polygonPoints.length > 0) {
-                ctx.lineTo(currentX, currentY); // Connect to the current mouse position
+                ctx.lineTo(currentX, currentY);
             }
 
             ctx.stroke();
@@ -72,7 +67,6 @@ const usePolygonSelect = (activeCanvas, canvasContainerRef, activeTool, setSelec
     const handleMouseUp = () => {
         if (activeTool !== "poly-selection") return;
 
-        // Optionally close the polygon if the last point is near the first one
         if (polygonPoints.length > 2) {
             const startPoint = polygonPoints[0];
             const lastPoint = polygonPoints[polygonPoints.length - 1];
@@ -80,7 +74,7 @@ const usePolygonSelect = (activeCanvas, canvasContainerRef, activeTool, setSelec
                 Math.pow(lastPoint.x - startPoint.x, 2) + Math.pow(lastPoint.y - startPoint.y, 2)
             );
             if (distance < 10) {
-                setPolygonPoints((prevPoints) => [...prevPoints, prevPoints[0]]); // Close the polygon
+                setPolygonPoints((prevPoints) => [...prevPoints, prevPoints[0]]);
                 setIsPolygonSelecting(false);
                 console.log("Polygon closed:", polygonPoints);
             }

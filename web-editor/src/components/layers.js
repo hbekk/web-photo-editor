@@ -13,10 +13,12 @@ import {useCanvasContext} from "../context/CanvasProvider";
 
 
 class CanvasManager {
-    constructor(containerId) {
+    constructor(containerId, x = 0, y = 0) {
         this.container = document.getElementById(containerId);
-        this.className = 'myCanvas';  
+        this.className = 'myCanvas';
         this.canvases = [];
+        this.x = x;
+        this.y = y;
     }
 
     createCanvas(width, height, isTextLayer = false, isBase = false, isShapeLayer = false, isLayer = true) {
@@ -31,7 +33,7 @@ class CanvasManager {
         canvas.isLayer = isLayer
 
         if (isTextLayer) {
-            canvas.fontsize = 20; 
+            canvas.fontsize = 20;
             canvas.font = "Arial";
             canvas.boldness = "";
             canvas.alignment = "";
@@ -42,7 +44,7 @@ class CanvasManager {
             canvas.shapeSize = 1;
             canvas.shapeType = "";
             canvas.shapeColor = "#ffffff";
-            canvas.outline = "";
+            canvas.outlineSize = "";
             canvas.outline_color = "";
         }
         this.container.append(canvas);
@@ -55,13 +57,18 @@ class CanvasManager {
     deleteCanvas(activeIndex) {
         this.container.removeChild(this.canvases[activeIndex]);
         this.canvases.splice(activeIndex, 1);
-
-        for (let i = 0; i < this.canvases.length; i++) {
-            if (this.canvases[i].id.startsWith("Layer")){
-                this.canvases[i].id = `Layer ${i+1}`; 
-            }
-        } 
         this.canvases[0].isBase = true;
+    }
+
+    deleteAll() {
+        if (this.canvases.length > 0) {
+            for (let i = this.canvases.length - 1; i >= 0; i--) {
+                this.container.removeChild(this.canvases[i]);
+                this.canvases.splice(i, 1);
+            }
+            this.canvases = [];
+            this.onCanvasCreated(this.canvases);
+        }
     }
 
     reorderUpCanvas(activeIndex) {
@@ -111,6 +118,11 @@ const Layers = () => {
     } 
 
     function handleDelete(index) {
+        if (canvasManager.canvases.length === 0) {
+            alert("Create a new project first")
+            return;
+        }
+
         if (canvasManager.canvases.length == 1) {
             alert("Cannot delete last layer")
         } else {
@@ -120,6 +132,11 @@ const Layers = () => {
     } 
 
     function handleUpReorder(index) {
+        if (canvasManager.canvases.length === 0) {
+            alert("Create a new project first")
+            return;
+        }
+
         if (canvasManager.canvases.length == 1) {
             alert("You must have at least two layers to rearrange")
             return;
@@ -141,7 +158,10 @@ const Layers = () => {
     } 
 
     function handleDownReorder(index) {
-
+        if (canvasManager.canvases.length === 0) {
+            alert("Create a new project first")
+            return;
+        }
         if (canvasManager.canvases.length == 1) {
             alert("You must have at least two layers to rearrange")
             return;
@@ -157,6 +177,10 @@ const Layers = () => {
     } 
 
     function handleRename(activeIndex) {
+        if (canvasManager.canvases.length === 0) {
+            alert("Create a new project first")
+            return;
+        }
         const newName = window.prompt("Please rename the canvas", "");
         if (newName) {
             setLayerName(newName);
@@ -165,6 +189,10 @@ const Layers = () => {
     }
 
     function handleNew() {
+        if (canvasManager.canvases.length === 0) {
+            alert("Create a new project first")
+            return;
+        }
         const width = canvasManager.canvases[0].width;
         const height = canvasManager.canvases[0].height;
         canvasManager.createCanvas(width, height);

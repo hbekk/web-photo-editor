@@ -7,33 +7,42 @@ const useEraser = (activeCanvas, canvasContainerRef, activeTool, setSelectionCan
     const handleMouseDown = (e) => {
         if (activeCanvas && activeTool === "eraser") {
             const rect = activeCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const scaleX = activeCanvas.width / rect.width;
+            const scaleY = activeCanvas.height / rect.height;
+
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
             setErasingPoints([{ x, y }]);
             setIsErasing(true);
-            setSelectionCanvas(activeCanvas);
         }
     };
 
     const handleMouseMove = (e) => {
         if (!isErasing || activeTool !== "eraser") return;
         const rect = activeCanvas.getBoundingClientRect();
-        const currentX = e.clientX - rect.left;
-        const currentY = e.clientY - rect.top;
+        const scaleX = activeCanvas.width / rect.width;
+        const scaleY = activeCanvas.height / rect.height;
 
-        // Add the current mouse position to the lasso path
+        const currentX = (e.clientX - rect.left) * scaleX;
+        const currentY = (e.clientY - rect.top) * scaleY;
+
         setErasingPoints((prevPoints) => [...prevPoints, { x: currentX, y: currentY }]);
 
-        if (selectionCanvas) {
-            const ctx = selectionCanvas.getContext("2d");
-            ctx.beginPath();
-            ctx.globalCompositeOperation="destination-out";
+        if (activeCanvas) {
+            const ctx = activeCanvas.getContext("2d");
+
+            ctx.globalCompositeOperation = "destination-out";
             ctx.lineWidth = brushSize;
 
             ctx.beginPath();
-            erasingPoints.forEach((point,) => {
-                ctx.lineTo(point.x, point.y);
+            erasingPoints.forEach((point, index) => {
+                if (index === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
             });
+            ctx.lineTo(currentX, currentY);
             ctx.stroke();
         }
     };
@@ -41,6 +50,7 @@ const useEraser = (activeCanvas, canvasContainerRef, activeTool, setSelectionCan
     const handleMouseUp = () => {
         if (activeTool !== "eraser") return;
         setIsErasing(false);
+        setErasingPoints([]);
     };
 
     useEffect(() => {
@@ -60,7 +70,7 @@ const useEraser = (activeCanvas, canvasContainerRef, activeTool, setSelectionCan
         }
     }, [isErasing, erasingPoints, activeCanvas, activeTool]);
 
-    return {isErasing: isErasing };
+    return { isErasing };
 };
 
 export default useEraser;

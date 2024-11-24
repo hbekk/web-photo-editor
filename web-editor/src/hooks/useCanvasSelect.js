@@ -1,16 +1,22 @@
 import { useState, useEffect } from "react";
 
-const useCanvasSelect = (activeCanvas, canvasContainerRef, activeTool, setSelectionCanvas, selectionCanvas) => {
-    const [isSelecting, setIsSelecting] = useState(false); // Tracks if a selection is in progress
+const useCanvasSelect = (activeCanvas, canvasContainerRef, activeTool, setSelectionCanvas, selectionCanvas, canvasScale = 1) => {
+    const [isSelecting, setIsSelecting] = useState(false);
     const [selection, setSelection] = useState(null);
 
     const handleMouseDown = (e) => {
-        if (activeCanvas && activeTool === "selection" ) {
-            const rect = activeCanvas.getBoundingClientRect();
+        if (activeCanvas && activeTool === "selection") {
+            const containerRect = canvasContainerRef.current.getBoundingClientRect();
+            const canvasRect = activeCanvas.getBoundingClientRect();
+
+            // Adjust mouse position relative to the container and canvas considering scale
+            const offsetX = (e.clientX - canvasRect.left) / canvasScale;
+            const offsetY = (e.clientY - canvasRect.top) / canvasScale;
+
             setSelection(null);
             setSelection({
-                startX: e.clientX - rect.left,
-                startY: e.clientY - rect.top,
+                startX: offsetX,
+                startY: offsetY,
                 endX: null,
                 endY: null,
             });
@@ -18,27 +24,27 @@ const useCanvasSelect = (activeCanvas, canvasContainerRef, activeTool, setSelect
 
             if (!selectionCanvas) {
                 const newCanvas = document.createElement("canvas");
-                newCanvas.width = rect.width;
-                newCanvas.height = rect.height;
-                newCanvas.id = "selection-canvas"
+                newCanvas.width = canvasRect.width / canvasScale;
+                newCanvas.height = canvasRect.height / canvasScale;
+                newCanvas.id = "selection-canvas";
                 newCanvas.style.position = "absolute";
-                newCanvas.style.top = `${rect.top}px`;
-                newCanvas.style.left = `${rect.left}px`;
+                newCanvas.style.top = `${canvasRect.top}px`;
+                newCanvas.style.left = `${canvasRect.left}px`;
                 newCanvas.style.pointerEvents = "none";
                 newCanvas.style.zIndex = 1;
                 document.body.appendChild(newCanvas);
                 setSelectionCanvas(newCanvas);
             }
         }
-
-
     };
 
     const handleMouseMove = (e) => {
         if (!isSelecting || activeTool !== "selection") return;
-        const rect = activeCanvas.getBoundingClientRect();
-        const currentX = e.clientX - rect.left;
-        const currentY = e.clientY - rect.top;
+
+        const canvasRect = activeCanvas.getBoundingClientRect();
+
+        const currentX = (e.clientX - canvasRect.left) / canvasScale;
+        const currentY = (e.clientY - canvasRect.top) / canvasScale;
 
         setSelection((prev) => ({
             ...prev,
@@ -55,16 +61,14 @@ const useCanvasSelect = (activeCanvas, canvasContainerRef, activeTool, setSelect
 
             ctx.strokeStyle = "white";
             ctx.lineWidth = 1;
-            ctx.setLineDash([5, 5]); // Dashed line
+            ctx.setLineDash([5, 5]);
             ctx.strokeRect(
-                Math.min(currentX, selection.startX),  // Left
-                Math.min(currentY, selection.startY),  // Top
-                width, // Width
-                height // Height
+                Math.min(currentX, selection.startX),
+                Math.min(currentY, selection.startY),
+                width,
+                height
             );
         }
-
-
     };
 
     const handleMouseUp = () => {
@@ -90,7 +94,7 @@ const useCanvasSelect = (activeCanvas, canvasContainerRef, activeTool, setSelect
                 };
             }
         }
-    }, [isSelecting, selection, activeCanvas, activeTool]);
+    }, [isSelecting, selection, activeCanvas, activeTool, canvasScale]);
 
     return { selection, setSelection, isSelecting };
 };

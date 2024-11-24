@@ -8,7 +8,7 @@ import { IoShapesSharp } from "react-icons/io5";
 import {TbLassoPolygon} from "react-icons/tb";
 import {useCanvasContext} from "../context/CanvasProvider";
 import {BiPointer} from "react-icons/bi";
-import {FaAngleDown} from "react-icons/fa";
+import {FaAngleDown, FaMinus, FaPlus, FaRegSquare} from "react-icons/fa";
 
 import {polySelectionRemover, selectionRemover} from "../utils/selectionRemover";
 import { FaEraser } from "react-icons/fa";
@@ -16,11 +16,11 @@ import { FaEraser } from "react-icons/fa";
 
 const ColorPicker = ({ color, onChange}) => {
     return (
-        <div className='color-picker'> 
-        <input 
-            type="color" 
-            value={color} 
-            onChange={(e) => onChange(e.target.value)} 
+        <div className='color-picker'>
+        <input
+            type="color"
+            value={color}
+            onChange={(e) => onChange(e.target.value)}
         />
          </div>
 
@@ -33,6 +33,7 @@ const Toolbar = () => {
     const [shapeMultiplier, setShapeMultiplier] = useState(1);
     const [isModalOpen, setModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState('');
+    const [canvasSize, setCanvasSize] = useState(100);
 
 
 
@@ -50,7 +51,11 @@ const Toolbar = () => {
             setBrushColor,
             setBrushSize,
             drawPattern,
-            setDrawPattern} = useCanvasContext();
+            setDrawPattern,
+            shapeColor,
+            setShapeColor,
+            shapeOutlineColor,
+            setShapeOutlineColor} = useCanvasContext();
 
     const patterns = [
         "Square",
@@ -104,6 +109,7 @@ const Toolbar = () => {
         canvasManager.createCanvas(width, height, true);
         let newCanvas = canvasManager.canvases[canvasManager.canvases.length - 1];
         newCanvas.isLayer = false;
+        newCanvas.isTextLayer = true;
 
         if (!newCanvas) return;  
     
@@ -125,7 +131,7 @@ const Toolbar = () => {
 
         setActiveIndex(canvasManager.canvases.length - 1)
         setActiveCanvas(newCanvas);
-        handleSelection("pointer");
+        handleSelection("text");
     };
 
     const handleFontSlider = (e) => {
@@ -183,36 +189,42 @@ const Toolbar = () => {
     // SHAPE HANDLING
 
     const addShape = () => {
-        if (!canvasManager) return;  
-        const width = canvasManager.canvases[0].width
-        const height = canvasManager.canvases[0].height
-        canvasManager.createCanvas(width, height);  
+        if (!canvasManager) return;
+        const width = canvasManager.canvases[0].width;
+        const height = canvasManager.canvases[0].height;
+        canvasManager.createCanvas(width, height);
         let newCanvas = canvasManager.canvases[canvasManager.canvases.length - 1];
         newCanvas.isShapeLayer = true;
         newCanvas.isLayer = false;
         newCanvas.shapeType = "Square";
         newCanvas.color = "#ffffff";
-        newCanvas.outlineColor = "#ffffff";
+        newCanvas.outlineColor = "#000000";
+        newCanvas.outlineSize = 4;
         newCanvas.shapeSize = 1;
-    
-        if (!newCanvas) return;  
-    
+
+        if (!newCanvas) return;
+
         const centerX = width / 2;
-        const centerY = height / 2; 
+        const centerY = height / 2;
         const ctx = newCanvas.getContext("2d");
-    
+
         if (!ctx) {
             console.error("Failed to get canvas context");
             return;
         }
 
-        ctx.fillStyle = "white";
-        ctx.fillRect(centerX, centerY, 50, 50);
-        setActiveIndex(canvasManager.canvases.length - 1)
+        ctx.fillStyle = newCanvas.color
+        ctx.fillRect(centerX - 25, centerY - 25, 50, 50); // Adjust for centering
+        ctx.strokeStyle = newCanvas.outlineColor // Stroke color
+        ctx.lineWidth = newCanvas.outlineSize; // Stroke width
+        ctx.strokeRect(centerX - 25, centerY - 25, 50, 50); // Adjust for centering
+
+        setActiveIndex(canvasManager.canvases.length - 1);
         setActiveCanvas(newCanvas);
     };
 
     const handleShapeChange = (newShape) => {
+        if (!activeCanvas.isShapeLayer) return;
         activeCanvas.shapeType = newShape;
 
         const ctx = activeCanvas.getContext("2d");
@@ -220,77 +232,165 @@ const Toolbar = () => {
 
         const centerX = activeCanvas.width / 2;
         const centerY = activeCanvas.height / 2;
-        ctx.fillStyle = "white";
+        ctx.fillStyle = activeCanvas.shapeColor;
+        ctx.strokeStyle = activeCanvas.outlineColor;
+        ctx.lineWidth = activeCanvas.outlineSize;
 
         if (newShape === "Square") {
-            ctx.fillRect(
-                centerX - (50 * activeCanvas.shapeSize) / 2,
-                centerY - (50 * activeCanvas.shapeSize) / 2,
-                50 * activeCanvas.shapeSize,
-                50 * activeCanvas.shapeSize
-            );
+            const size = 50 * activeCanvas.shapeSize;
+            ctx.fillRect(centerX - size / 2, centerY - size / 2, size, size);
+            ctx.strokeRect(centerX - size / 2, centerY - size / 2, size, size);
 
         } else if (newShape === "Circle") {
+            const radius = (50 * activeCanvas.shapeSize) / 2;
             ctx.beginPath();
-            ctx.arc(centerX, centerY, (50 * activeCanvas.shapeSize) / 2, 0, 2 * Math.PI);
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
             ctx.fill();
+            ctx.stroke();
 
         } else if (newShape === "Rectangle") {
-            ctx.fillRect(
-                centerX - (100 * activeCanvas.shapeSize) / 2,
-                centerY - (50 * activeCanvas.shapeSize) / 2,
-                100 * activeCanvas.shapeSize,
-                50 * activeCanvas.shapeSize
-            );
+            const width = 100 * activeCanvas.shapeSize;
+            const height = 50 * activeCanvas.shapeSize;
+            ctx.fillRect(centerX - width / 2, centerY - height / 2, width, height);
+            ctx.strokeRect(centerX - width / 2, centerY - height / 2, width, height);
         }
-
     };
 
 
+
     const handleShapeSlider = (e) => {
+        if (!activeCanvas.isShapeLayer) return;
         const newSize = e.target.value;
         setShapeMultiplier(newSize);
+
         if (activeCanvas) {
             const ctx = activeCanvas.getContext("2d");
             if (ctx) {
+                ctx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
+                const centerX = activeCanvas.width / 2;
+                const centerY = activeCanvas.height / 2;
+                ctx.fillStyle = activeCanvas.shapeColor;
+                ctx.strokeStyle = activeCanvas.outlineColor;
+                ctx.lineWidth = activeCanvas.outlineSize;
 
                 if (activeCanvas.shapeType === "Square") {
-                    ctx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
-                    const centerX = activeCanvas.width / 2 - (50 * shapeMultiplier) / 2;
-                    const centerY = activeCanvas.height / 2 - (50 * shapeMultiplier) / 2;
-                    ctx.fillStyle = "white";
-                    ctx.fillRect(centerX, centerY, 50 * shapeMultiplier, 50 * shapeMultiplier);
+                    const size = 50 * shapeMultiplier;
+                    ctx.fillRect(centerX - size / 2, centerY - size / 2, size, size);
+                    ctx.strokeRect(centerX - size / 2, centerY - size / 2, size, size);
+
                     activeCanvas.shapeSize = shapeMultiplier;
                 }
 
                 if (activeCanvas.shapeType === "Circle") {
-                    ctx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
-                    const centerX = activeCanvas.width / 2;
-                    const centerY = activeCanvas.height / 2;
-                    ctx.fillStyle = "white";
+                    const radius = (50 * shapeMultiplier) / 2;
                     ctx.beginPath();
-                    ctx.arc(centerX, centerY, (50 * shapeMultiplier) / 2, 0, 2 * Math.PI);
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
                     ctx.fill();
+                    ctx.stroke();
+
                     activeCanvas.shapeSize = shapeMultiplier;
                 }
 
                 if (activeCanvas.shapeType === "Rectangle") {
-                    ctx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
-                    const centerX = activeCanvas.width / 2 - (100 * shapeMultiplier) / 2;
-                    const centerY = activeCanvas.height / 2 - (50 * shapeMultiplier) / 2;
-                    ctx.fillStyle = "white";
-                    ctx.fillRect(centerX, centerY, 100 * shapeMultiplier, 50 * shapeMultiplier);
+                    const width = 100 * shapeMultiplier;
+                    const height = 50 * shapeMultiplier;
+                    ctx.fillRect(centerX - width / 2, centerY - height / 2, width, height);
+                    ctx.strokeRect(centerX - width / 2, centerY - height / 2, width, height);
+
                     activeCanvas.shapeSize = shapeMultiplier;
                 }
-
-
             }
         }
     };
 
+    const handleShapeColorChange = (newColor) => {
+        setShapeColor(newColor);
+        setColor(newColor);
+
+        if (activeCanvas) {
+            const ctx = activeCanvas.getContext("2d");
+            if (ctx) {
+                ctx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
+                const centerX = activeCanvas.width / 2;
+                const centerY = activeCanvas.height / 2;
+                ctx.fillStyle = newColor;
+                ctx.strokeStyle = activeCanvas.shapeOutlineColor;
+                ctx.lineWidth = activeCanvas.outlineSize;
+
+                if (activeCanvas.shapeType === "Square") {
+                    const size = 50 * activeCanvas.shapeSize;
+                    ctx.fillRect(centerX - size / 2, centerY - size / 2, size, size);
+                    ctx.strokeRect(centerX - size / 2, centerY - size / 2, size, size);
+                }
+
+                if (activeCanvas.shapeType === "Circle") {
+                    const radius = (50 * activeCanvas.shapeSize) / 2;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                if (activeCanvas.shapeType === "Rectangle") {
+                    const width = 100 * activeCanvas.shapeSize;
+                    const height = 50 * activeCanvas.shapeSize;
+                    ctx.fillRect(centerX - width / 2, centerY - height / 2, width, height);
+                    ctx.strokeRect(centerX - width / 2, centerY - height / 2, width, height);
+                }
+            }
+            activeCanvas.shapeColor = newColor;
+        }
+    };
+
+    const handleShapeOutlineColorChange = (newColor) => {
+        setShapeOutlineColor(newColor);
+        setColor(newColor);
+
+        if (activeCanvas) {
+            const ctx = activeCanvas.getContext("2d");
+            if (ctx) {
+                activeCanvas.outlineColor = newColor;
+                ctx.clearRect(0, 0, activeCanvas.width, activeCanvas.height); // Clear the canvas first
+                const centerX = activeCanvas.width / 2;
+                const centerY = activeCanvas.height / 2;
+                ctx.fillStyle = activeCanvas.shapeColor;
+                ctx.strokeStyle = newColor;
+                ctx.lineWidth = activeCanvas.outlineSize;
+
+                if (activeCanvas.shapeType === "Square") {
+                    const size = 50 * activeCanvas.shapeSize;
+                    ctx.fillRect(centerX - size / 2, centerY - size / 2, size, size); // Fill the square
+                    ctx.strokeRect(centerX - size / 2, centerY - size / 2, size, size); // Apply stroke
+                }
+
+                if (activeCanvas.shapeType === "Circle") {
+                    const radius = (50 * activeCanvas.shapeSize) / 2;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                    ctx.fill(); // Fill the circle
+                    ctx.stroke(); // Apply stroke to the circle path
+                }
+
+                if (activeCanvas.shapeType === "Rectangle") {
+                    const width = 100 * activeCanvas.shapeSize;
+                    const height = 50 * activeCanvas.shapeSize;
+                    ctx.fillRect(centerX - width / 2, centerY - height / 2, width, height); // Fill the rectangle
+                    ctx.strokeRect(centerX - width / 2, centerY - height / 2, width, height); // Apply stroke
+                }
+            }
+        }
+    };
+
+
+
     // Selection Handling
 
     const handleSelection = (tool) => {
+        if (canvasManager.canvases.length === 0) {
+            alert("Create a new project first")
+            return;
+        }
+
         if (activeTool === "selection" || activeTool === "lasso-selection") {
             selectionRemover(setSelectionCanvas, setSelection);
         }
@@ -301,13 +401,42 @@ const Toolbar = () => {
         setActiveTool(tool);
     }
 
+    // Function to resize the canvas and redraw the image
+    const handleCanvasSizeChange = (delta) => {
+        let src = window.cv.imread(activeCanvas);  // Read the canvas content into a Mat
+        let dst = new window.cv.Mat();  // Output Mat to store resized image
+
+        let currentWidth = activeCanvas.width;
+        let currentHeight = activeCanvas.height;
+        let newWidth = currentWidth + delta;
+        let newHeight = (currentHeight / currentWidth) * newWidth;  // Maintain aspect ratio
+
+        // Define the new size for resizing
+        let dsize = new window.cv.Size(newWidth, newHeight);
+
+        window.cv.resize(src, dst, dsize, 0, 0, window.cv.INTER_LANCZOS4);
+
+        activeCanvas.width = newWidth;
+        activeCanvas.height = newHeight;
+
+        const ctx = activeCanvas.getContext('2d');
+        ctx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
+
+        window.cv.imshow(activeCanvas, dst);
+
+        src.delete();
+        dst.delete();
+    };
+
+
 
 
     return (
         <div className='toolbar-container'>
-            {activeCanvas?.isTextLayer && (
+            {(activeTool==="text") && (
                 <div className='text-adjust'>
                     <MdTextFields />
+                    <button className="confirm-btn" onClick={addText}>Add text</button>
                     <div className="dropdown">
                         <a className="dropbtn">Size: {activeCanvas.fontsize}px <i><FaAngleDown/></i></a>
                         <div className="dropdown-content">
@@ -347,6 +476,20 @@ const Toolbar = () => {
                     <button className="confirm-btn" onClick={() => handleSelection("pointer")}> Complete Selection</button>
                 </div>
             )}
+
+            {(activeTool === "pointer" && activeCanvas && !activeCanvas.isTextLayer && !activeCanvas.isShapeLayer && !activeCanvas.isBase) && (
+                <div className='text-adjust'>
+                    <span>Size: </span>
+                    <button className="confirm-btn" onClick={() => handleCanvasSizeChange(50)}>
+                        <FaPlus />
+                    </button>
+
+                    <button className="confirm-btn" onClick={() => handleCanvasSizeChange(-50)}>
+                        <FaMinus />
+                    </button>
+                </div>
+            )}
+
 
             {(activeTool === "brush")  && (
                 <div className='text-adjust' >
@@ -390,7 +533,7 @@ const Toolbar = () => {
                             <input
                                 type="range"
                                 min="5"
-                                max="50"
+                                max="70"
                                 value={brushSize}
                                 className="slider"
                                 id="myRange"
@@ -401,9 +544,10 @@ const Toolbar = () => {
                   </div>
             )}
 
-            {activeCanvas?.isShapeLayer  && (
+            {(activeTool==="shape") && (
                 <div className='text-adjust'>
                     <IoShapesSharp/>
+                    <button className="confirm-btn" onClick={addShape}>Add Shape</button>
                     <div className="dropdown">
                         <a className="dropbtn">Size: {activeCanvas.shapeSize}<i><FaAngleDown/></i></a>
                         <div className="dropdown-content">
@@ -432,9 +576,9 @@ const Toolbar = () => {
                         </div>
                     </div>
                     <h5>Fill </h5>
-                    <ColorPicker color={brushColor} onChange={handleBrushColorChange}/>
+                    <ColorPicker color={activeCanvas.shapeColor} onChange={handleShapeColorChange}/>
                     <h5>Stroke</h5>
-                    <ColorPicker color={brushColor} onChange={handleBrushColorChange}/>
+                    <ColorPicker color={activeCanvas.outlineColor} onChange={handleShapeOutlineColorChange}/>
 
 
                 </div>
@@ -450,9 +594,9 @@ const Toolbar = () => {
                         </a>
                     </li>
                     <li>
-                        <a onClick={() => {
-                            addText()
-                        }}><RxText/></a>
+                        <a className={activeTool === "text" ? "active" : ""}
+                           onClick={() => handleSelection("text")}
+                        ><RxText/></a>
                     </li>
                     <li>
                         <a className={activeTool === "brush" ? "active" : ""}
@@ -467,7 +611,7 @@ const Toolbar = () => {
                     </li>
                     <li>
                         <a className={activeTool === "shape" ? "active" : ""}
-                           onClick={() => addShape()}
+                           onClick={() => handleSelection("shape")}
                            ><IoShapesSharp/></a>
                     </li>
                     <li>
