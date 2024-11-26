@@ -50,7 +50,10 @@ function CanvasContainer() {
             const newCanvas = canvasManager.canvases[canvasManager.canvases.length - 1];
             newCanvas.width = newWidth;
             newCanvas.height = newHeight;
-            newCanvas.isBase = true;
+
+            if (canvasManager.canvases.length === 1) {
+                newCanvas.isBase = true;
+            }
 
             setHeight(newCanvas.height);
             setWidth(newCanvas.width);
